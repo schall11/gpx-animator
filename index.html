@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GPX Animator</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="css/bootstrap-slider.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/easy-button.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.4.2/Control.FullScreen.min.css">
+    <link rel="stylesheet" href="src/leaflet.timedimension.control.css" />
+    <link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/leaflet.extra-markers.min.css">
+    <link href="css/bootstrap-colorpicker.css" rel="stylesheet">
+
+
+
+
+</head>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    html,
+    body,
+    #map {
+        height: 100%;
+        width: 100%;
+    }
+
+    #dateDisp {
+        color: black;
+        background-color: white;
+        /*position: absolute !important;*/
+        /*top: 25px;*/
+        /*left: 150px;*/
+        font-size: 25px;
+        padding: 10px 20px 10px 20px;
+        z-index: 999999999999999999999999999;
+        text-align: center;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+        border-radius: 4px;
+    }
+
+    #dateDisp:empty {
+        display: none;
+    }
+
+    .leaflet-bar-timecontrol .timecontrol-speed .speed {
+        width: 45px;
+    }
+
+</style>
+</head>
+
+<body>
+    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Settings</h5>
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">&times;</span>-->
+                    <!--</button>-->
+                </div>
+                <div class="modal-body form-group">
+                    <label for="timeStep">GPX/CSV File</label>
+                    <input type="file" id="fileInput" class="form-control" /><br>
+                    <label for="timeStep">Time Step (hours)</label>
+                    <input type="text" id="timeStep" value="24H" class="form-control" /><br>
+                    <label for="tail">Trailing Tail Time (ex: 10M14D for 10 months 14 days)</label>
+                    <input type="text" id="tail" value="1M" class="form-control" /><br>
+                    <label for="colorPick">Line Color</label>
+                    <input id="colorPick" type="text" class="form-control input-lg" value="" /><br>
+                    <label for="weightSlider">Line Width Slider</label><br>
+                    <input id="weightSlider" type="text" data-slider-min="0" data-slider-max="10" data-slider-step="1" data-slider-value="3" /><span id="weightSliderValLabel" style="padding-left:15px;"><span id="weightSliderVal">1</span></span><br><br>
+                    <label for="opSlider">Line Opacity</label><br>
+                    <input id="opSlider" type="text" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-value="1" /><span id="opSliderValLabel" style="padding-left:15px;"><span id="opSliderVal">100%</span></span>
+
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="acceptBtn">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.rawgit.com/tryone144/dateFormat/master/date.format.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/1.4.2/Control.FullScreen.min.js"></script>
+    <script type="text/javascript" src="//cdn.rawgit.com/ptv-logistics/Leaflet.NonTiledLayer/v0.7.3/NonTiledLayer.js"></script>
+    <script type="text/javascript" src="//cdn.rawgit.com/ptv-logistics/Leaflet.NonTiledLayer/v0.7.3/NonTiledLayer.WMS.js"></script>
+    <script type="text/javascript" src="//cdn.rawgit.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.2/leaflet-omnivore.min.js"></script>
+    <script type="text/javascript" src="src/bootstrap-slider.min.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.util.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.layer.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.layer.wms.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.layer.geojson.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.player.js"></script>
+    <script type="text/javascript" src="src/leaflet.timedimension.control.js"></script>
+    <script type="text/javascript" src="js/baselayers.js"></script>
+    <script src="js/leaflet.extra-markers.min.js"></script>
+    <script src="src/easy-button.js"></script>
+    <script type="text/javascript" src="js/mapControl.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="src/bootstrap-colorpicker.min.js"></script>
+</body>
+
+</html>
